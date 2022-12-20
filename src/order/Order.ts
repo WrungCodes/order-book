@@ -3,15 +3,16 @@ import { BigNumber } from 'bignumber.js';
 
 export class Order implements IOrderCore {
 
-    private readonly orderCore: IOrderCore;
-    private price: string;
-    private initialQuantity: string;
-    private currentQuantity: string;
-    private isBuySide: boolean;
+    readonly orderCore: IOrderCore;
+    readonly price: string;
+    readonly initialQuantity: string;
+    readonly isBuySide: boolean;
 
-    orderId: string;
-    userId: string;
-    securityId: string;
+    currentQuantity: string;
+
+    readonly orderId: string;
+    readonly userId: string;
+    readonly securityId: string;
 
     constructor( orderCore: IOrderCore, price: string, quantity: string, isBuySide: boolean){
         this.orderCore = orderCore;
