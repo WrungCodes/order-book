@@ -9,8 +9,8 @@ import { CancelOrder } from "./CancelOrder";
 export class OrderBook {
     private readonly security: string
     private readonly orders: Map<string, OrderBookEntry> = new Map<string, OrderBookEntry>()
-    private readonly askLimits: SortedSetType<Limit> = new SortedSet<Limit>([], undefined, undefined, sortAsk);
-    private readonly bidLimits: SortedSetType<Limit> = new SortedSet<Limit>([], undefined, undefined, sortBuy);
+    private readonly askLimits: SortedSetType<Limit> = new SortedSet<Limit>([], equalLimit, sortAsk);
+    private readonly bidLimits: SortedSetType<Limit> = new SortedSet<Limit>([], equalLimit, sortBid);
 
     constructor(security: string){
         this.security = security
@@ -98,7 +98,83 @@ export class OrderBook {
 
         orders.delete(order.orderId);
     }
+
+    getAskOrders(): OrderBookEntry[] 
+    {
+        const ob: OrderBookEntry[] = [];
+
+        this.askLimits.forEach((limit: Limit) => {
+            if(limit.isEmpty()) { return }
+            else
+            {
+                let pointer = limit.head;
+                while (pointer != null) {
+                    ob.push(pointer)
+                    pointer = pointer.next
+                }
+            }
+        })
+
+        return ob;
+    }
+
+    getBidOrders(): OrderBookEntry[] 
+    {
+        const ob: OrderBookEntry[] = [];
+
+        this.bidLimits.forEach((limit: Limit) => {
+            if(limit.isEmpty()) { return }
+            else
+            {
+                let pointer = limit.head;
+                while (pointer != null) {
+                    ob.push(pointer)
+                    pointer = pointer.next
+                }
+            }
+        })
+
+        return ob;
+    }
+
+    getSpread() {
+        let bestAsk = null;
+        let bestBid = null;
+
+        if(this.askLimits.any() && !this.askLimits.min()?.isEmpty())
+        { bestAsk = this.askLimits.min()?.price }
+
+        if(this.bidLimits.any() && !this.bidLimits.max()?.isEmpty())
+        { bestBid = this.bidLimits.max()?.price }
+        
+        if(bestAsk == null || bestBid == null) { return null }
+
+        return new BigNumber(bestAsk).minus(bestBid).toString()
+    }
 }
 
-const sortAsk = (a: Limit, b: Limit) => (new BigNumber(a.price)).toNumber() - (new BigNumber(b.price)).toNumber()
-const sortBuy = (a: Limit, b: Limit) => (new BigNumber(a.price)).toNumber() + (new BigNumber(b.price)).toNumber()
+const sortAsk = (a: Limit, b: Limit): number => {
+    const aa = new BigNumber(a.price);
+    const bb = new BigNumber(b.price);
+
+    if(aa.isEqualTo(bb)) { return 0; }
+    if(aa.isGreaterThan(bb)) { return 1; }
+    return -1;
+}
+
+const sortBid = (a: Limit, b: Limit): number => {
+    const aa = new BigNumber(a.price);
+    const bb = new BigNumber(b.price);
+
+    if(aa.isEqualTo(bb)) { return 0; }
+    if(aa.isGreaterThan(bb)) { return -1; }
+    return 1;
+}
+
+const equalLimit = (a: Limit, b: Limit): boolean => {
+    const aa = new BigNumber(a.price);
+    const bb = new BigNumber(b.price);
+
+    if(aa.isEqualTo(bb)) { return true; }
+    return false;
+}

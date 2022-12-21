@@ -37,4 +37,15 @@ export class Order implements IOrderCore {
 
         this.currentQuantity = (cq.minus(amount)).toString()
     }
+
+    toJSON() {
+        return {
+            price: this.price,
+            quantity: this.currentQuantity,
+            orderId: this.orderId,
+            isBuySide: this.isBuySide,
+            security: this.securityId,
+            userId: this.userId,
+        };
+    }
 }

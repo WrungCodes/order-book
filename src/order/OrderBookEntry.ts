@@ -28,4 +28,11 @@ export class OrderBookEntry {
     setPrevious(order: OrderBookEntry | null){
         this.previous = order
     }
+
+    toJSON() {
+        return {
+            time: this.creationTime,
+            order: this.currentOrder
+        };
+    }
 }

@@ -83,4 +83,10 @@ export class Limit {
 
         return orderRecords;
     }
+
+    toJSON() {
+        return {
+            price: this.price
+        };
+    }
 }
