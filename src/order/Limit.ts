@@ -5,8 +5,8 @@ import { OrderBookEntry } from "./OrderBookEntry";
 export class Limit {
     public price: string;
 
-    private head: OrderBookEntry | null = null;
-    private tail: OrderBookEntry | null = null;
+    public head: OrderBookEntry | null = null;
+    public tail: OrderBookEntry | null = null;
     
     constructor(price: string){
         this.price = price

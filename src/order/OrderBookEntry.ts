@@ -7,8 +7,8 @@ export class OrderBookEntry {
     readonly parentLimit: Limit;
     readonly creationTime: Date;
 
-    protected next: OrderBookEntry | null = null;
-    protected previous: OrderBookEntry | null = null;
+    next: OrderBookEntry | null = null;
+    previous: OrderBookEntry | null = null;
     
     constructor( currentOrder: Order, parentLimit: Limit){
         this.creationTime = new Date(Date.now());
