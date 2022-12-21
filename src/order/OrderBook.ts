@@ -14,8 +14,6 @@ export class OrderBook {
 
     constructor(security: string){
         this.security = security
-        // const numbersSet = new Set([300, 100, 700]);
-        // const sortedNumbers = Array.from(numbersSet).sort((a, b) => a - b);
     }
 
     count() : number { return this.orders.size; }
