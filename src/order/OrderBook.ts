@@ -5,6 +5,8 @@ import { Order } from "./Order";
 import SortedSet, { SortedSet as SortedSetType } from "collections/sorted-set";
 import { ModifyOrder } from "./ModifyOrder";
 import { CancelOrder } from "./CancelOrder";
+import { OrderMatchingAlgo } from "../interface/OrderInterfaces";
+import { FIFOMatching } from "./matching/fifo-matching";
 
 export class OrderBook {
     private readonly security: string
@@ -12,8 +14,15 @@ export class OrderBook {
     private readonly askLimits: SortedSetType<Limit> = new SortedSet<Limit>([], equalLimit, sortAsk);
     private readonly bidLimits: SortedSetType<Limit> = new SortedSet<Limit>([], equalLimit, sortBid);
 
-    constructor(security: string){
+    private matchingAlgo: OrderMatchingAlgo;
+
+    constructor(security: string, matchingAlgo: OrderMatchingAlgo = new FIFOMatching()){
         this.security = security
+        this.matchingAlgo = matchingAlgo
+    }
+
+    match() : any {
+        this.matchingAlgo.match()
     }
 
     count() : number { return this.orders.size; }

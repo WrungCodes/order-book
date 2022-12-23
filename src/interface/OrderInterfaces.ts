@@ -25,3 +25,11 @@ export interface OrderRecord {
     securityId: string;
     queuePosition: number;
 }
+
+export interface OrderMatchingAlgo {
+    match() : MatchResults;
+}
+
+export interface MatchResults {
+
+}
