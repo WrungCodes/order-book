@@ -34,31 +34,41 @@ export class OrderBook {
         this.addOrderHelper(order, baseLimit, order.isBuySide ? this.bidLimits : this.askLimits, this.orders)
     }
 
-    addOrderHelper(order: Order, limit: Limit, limits: SortedSetType<Limit>, orders: Map<string, OrderBookEntry>){
-        if(limits.has(limit))
+    addOrderHelper(order: Order, baselimit: Limit, limits: SortedSetType<Limit>, orders: Map<string, OrderBookEntry>){
+        if(limits.has(baselimit))
         {
-            const entry: OrderBookEntry | null = new OrderBookEntry(order, limit)
+            let limit = limits.get(baselimit)
 
-            if(limit.head == null)
+            if(limit)
             {
-                limit.head = entry
-                limit.tail = entry
+                const entry: OrderBookEntry | null = new OrderBookEntry(order, limit)
+    
+                if(limit.head == null)
+                {
+                    limit.head = entry
+                    limit.tail = entry
+                }
+                else
+                {
+                    const tailPointer = limit.tail;
+
+                    if(tailPointer)
+                    {
+                        tailPointer.next = entry;
+                        entry.previous = tailPointer;
+                        limit.tail = entry
+                    }
+                }
+
+                orders.set(order.orderId, entry)    
             }
-            else
-            {
-                const tailPointer = limit.tail;
-                (tailPointer as OrderBookEntry).next = entry;
-                entry.previous = tailPointer;
-                limit.tail = entry
-            }
-            orders.set(order.orderId, entry)
         }
         else 
         {
-            limits.add(limit)
-            const entry = new OrderBookEntry(order, limit)
-            limit.head = entry
-            limit.tail = entry
+            limits.add(baselimit)
+            const entry = new OrderBookEntry(order, baselimit)
+            baselimit.head = entry
+            baselimit.tail = entry
             orders.set(order.orderId, entry)
         }
     }
